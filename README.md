@@ -68,6 +68,8 @@ A fix only counts if the run ended in `awaiting_approval` **and** the hidden tes
 
 Run `mobileforge bench`, then see [results/summary.md](results/summary.md). Raw per-run rows are in `results/runs.csv`.
 
+Example run (`core-01`, Claude Sonnet 5.5, multi-agent mode): reproduced with a failing test, patched on the first attempt, passed the regression suite, typecheck, review and hidden acceptance tests. 23 tool calls, $0.25, 4.5 minutes.
+
 ## Quick start (Windows)
 
 ```powershell
