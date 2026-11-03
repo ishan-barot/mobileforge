@@ -1,0 +1,9 @@
+{
+  "id": "core-08",
+  "title": "Unlimited plans never get recommended",
+  "layer": "core",
+  "category": "data",
+  "bug_report": "Unlimited plans never show up under 'Cheaper plans', even when an unlimited plan is cheaper than what the user pays now. Plans with dataGB = null mean unlimited and should always have enough data.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

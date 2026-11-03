@@ -1,0 +1,13 @@
+diff --git a/apps/mobile/src/app/result/[id].tsx b/apps/mobile/src/app/result/[id].tsx
+index 37f233a..8671915 100644
+--- a/apps/mobile/src/app/result/[id].tsx
++++ b/apps/mobile/src/app/result/[id].tsx
+@@ -27,7 +27,7 @@ export default function ResultScreen() {
+             <Text style={ui.h1} accessibilityRole="header">{saved.bill.carrier}</Text>
+             <Text style={ui.muted}>{saved.bill.planName} · {new Date(saved.savedAt).toLocaleDateString()}</Text>
+ 
+-            {saved.flags.length > 0 && (
++            {saved.flags.length > 1 && (
+               <View style={ui.card}>
+                 <Text style={ui.h2}>Heads up</Text>
+                 {saved.flags.map((f) => <Text key={f.kind} style={ui.warn}>• {f.message}</Text>)}

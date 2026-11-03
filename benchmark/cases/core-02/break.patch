@@ -1,0 +1,13 @@
+diff --git a/packages/core/src/flags.ts b/packages/core/src/flags.ts
+index 8f251e0..5511c24 100644
+--- a/packages/core/src/flags.ts
++++ b/packages/core/src/flags.ts
+@@ -13,7 +13,7 @@ export function wasteFlags(bill: Bill, today = new Date(), previous?: Bill): Was
+ 
+   if (bill.promoEndDate && bill.promoDiscount) {
+     const days = Math.ceil((Date.parse(bill.promoEndDate) - today.getTime()) / DAY);
+-    if (days >= 0 && days <= 60) {
++    if (days <= 60) {
+       flags.push({
+         kind: "promo_ending",
+         message: `Promo ends in ${days} days → bill jumps $${bill.promoDiscount.toFixed(2)}`,

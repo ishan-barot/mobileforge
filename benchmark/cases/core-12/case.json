@@ -1,0 +1,9 @@
+{
+  "id": "core-12",
+  "title": "Missing usage falls back to a tiny default",
+  "layer": "core",
+  "category": "data",
+  "bug_report": "When a bill doesn't list how much data was used, Fineprint recommends tiny 10-15 GB plans to someone on a 50 GB plan. With no usage figure it should assume the customer uses their full current cap.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

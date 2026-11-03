@@ -1,0 +1,9 @@
+{
+  "id": "core-05",
+  "title": "Repeat overage fires when last month was clean",
+  "layer": "core",
+  "category": "state",
+  "bug_report": "When comparing with last month's bill, Fineprint says 'Overage charges 2 months in a row' even though last month had $0 in overage charges. It should only say that when both months had overage.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

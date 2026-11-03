@@ -1,0 +1,13 @@
+diff --git a/packages/core/src/flags.ts b/packages/core/src/flags.ts
+index 8f251e0..a6d016d 100644
+--- a/packages/core/src/flags.ts
++++ b/packages/core/src/flags.ts
+@@ -34,7 +34,7 @@ export function wasteFlags(bill: Bill, today = new Date(), previous?: Bill): Was
+     const repeat = (previous?.overageCharges ?? 0) > 0;
+     flags.push({
+       kind: repeat ? "repeat_overage" : "overage",
+-      message: repeat ? "Overage charges 2 months in a row" : `$${bill.overageCharges.toFixed(2)} in overage charges this month`,
++      message: repeat ? "Overage charges 2 months in a row" : `$${bill.overageCharges} in overage charges this month`,
+       extraPerYear: bill.overageCharges * 12,
+     });
+   }

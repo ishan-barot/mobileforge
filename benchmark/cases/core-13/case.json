@@ -1,0 +1,9 @@
+{
+  "id": "core-13",
+  "title": "Dotted phone numbers leak through redaction",
+  "layer": "core",
+  "category": "privacy",
+  "bug_report": "Privacy bug: phone numbers written with dots, like 416.555.0142, are sent to the server unmasked. Dashes and spaces work fine.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

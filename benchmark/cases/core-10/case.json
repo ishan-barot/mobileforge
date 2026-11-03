@@ -1,0 +1,9 @@
+{
+  "id": "core-10",
+  "title": "Cheaper plans list sorted backwards",
+  "layer": "core",
+  "category": "logic",
+  "bug_report": "The 'Cheaper plans' list puts the plan with the smallest savings first. The biggest savings should be at the top.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

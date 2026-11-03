@@ -1,0 +1,13 @@
+diff --git a/packages/core/src/flags.ts b/packages/core/src/flags.ts
+index 8f251e0..b886bc3 100644
+--- a/packages/core/src/flags.ts
++++ b/packages/core/src/flags.ts
+@@ -22,7 +22,7 @@ export function wasteFlags(bill: Bill, today = new Date(), previous?: Bill): Was
+     }
+   }
+ 
+-  if (bill.dataCapGB && bill.dataUsedGB !== null && bill.dataUsedGB / bill.dataCapGB < 0.25) {
++  if (bill.dataCapGB && bill.dataUsedGB && bill.dataUsedGB / bill.dataCapGB < 0.25) {
+     flags.push({
+       kind: "low_usage",
+       message: `You used ${bill.dataUsedGB} GB of a ${bill.dataCapGB} GB plan`,

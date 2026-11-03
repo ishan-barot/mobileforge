@@ -1,0 +1,9 @@
+{
+  "id": "core-11",
+  "title": "Yearly savings lose their cents",
+  "layer": "core",
+  "category": "data",
+  "bug_report": "Yearly savings are rounded to whole dollars. Switching from $55.00 to a $25.05 plan shows 'Save $359/yr' but the real number is $359.40. Savings should keep cents.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

@@ -1,0 +1,12 @@
+appId: com.ishanbarot.fineprint
+---
+- launchApp:
+    clearState: true
+- tapOn: "Get started"
+- tapOn: "Try a sample bill"
+- extendedWaitUntil:
+    visible: "Cheaper plans"
+    timeout: 30000
+- tapOn: "Back"
+- assertVisible: "Past bills"
+- assertVisible: "Maplewave Mobile.*"

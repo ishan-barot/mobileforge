@@ -1,0 +1,9 @@
+{
+  "id": "core-15",
+  "title": "Bare 10-digit phones become [NUMBER]",
+  "layer": "core",
+  "category": "privacy",
+  "bug_report": "A phone number written with no separators, like 4165550142, gets redacted as [NUMBER] instead of [PHONE], so Claude loses the context that it was a phone number. Long account-like digit runs should still become [NUMBER].",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

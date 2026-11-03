@@ -1,0 +1,9 @@
+{
+  "id": "core-02",
+  "title": "Expired promos still trigger a warning",
+  "layer": "core",
+  "category": "logic",
+  "bug_report": "Users whose promo already ended see a warning like 'Promo ends in -5 days'. A promo that has already expired should not produce a promo-ending flag at all.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

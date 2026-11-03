@@ -1,0 +1,11 @@
+diff --git a/packages/core/src/redact.ts b/packages/core/src/redact.ts
+index dc75769..73b2c5c 100644
+--- a/packages/core/src/redact.ts
++++ b/packages/core/src/redact.ts
+@@ -1,5 +1,5 @@
+ // order matters: labeled account numbers first, then phones, then leftover long digit runs
+-const ACCOUNT = /\b(account|acct|customer)(?:\s*(?:no\.?|number|#))?\s*[:#]?\s*([A-Z0-9][\d -]{3,}\d|(?=[A-Z-]*\d)[A-Z0-9-]{5,})/gi;
++const ACCOUNT = /\b(account|acct|customer)(?:\s*(?:no\.?|number|#))?\s*[:#]?\s*([A-Z0-9][\d -]{3,}\d|(?=[A-Z-]*\d)[A-Z0-9-]{5,})/g;
+ const PHONE = /(?:\+?1[\s.-]?)?\(?\b\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/g;
+ const EMAIL = /[\w.+-]+@[\w-]+\.[\w.]+/g;
+ const POSTAL = /\b[A-Z]\d[A-Z][ -]?\d[A-Z]\d\b/gi;

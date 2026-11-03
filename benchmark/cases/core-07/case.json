@@ -1,0 +1,9 @@
+{
+  "id": "core-07",
+  "title": "Plan matcher removes the data headroom",
+  "layer": "core",
+  "category": "logic",
+  "bug_report": "I use 9 GB a month and Fineprint recommends a 10 GB plan. The matcher is supposed to require 20% headroom above my usage (so at least 10.8 GB), so a 10 GB plan should not be suggested.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "android-02",
+  "title": "Back button lost its accessibility label",
+  "layer": "android",
+  "category": "accessibility",
+  "bug_report": "On the Android result screen, TalkBack and our UI automation can't find the 'Back' button anymore. The button visually shows '‹ Back' but should be exposed to accessibility services with the label 'Back'.",
+  "break_patch": "break.patch",
+  "repro_flows": ["sample-bill"],
+  "hidden_flow": "hidden.yaml"
+}

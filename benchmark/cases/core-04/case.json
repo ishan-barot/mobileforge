@@ -1,0 +1,9 @@
+{
+  "id": "core-04",
+  "title": "Exactly 25% usage is flagged as under 25%",
+  "layer": "core",
+  "category": "logic",
+  "bug_report": "The low usage warning says it fires when you use under 25% of your data, but someone who used exactly 12.5 GB of a 50 GB plan (exactly 25%) is told they're under-using their plan.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

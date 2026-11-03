@@ -1,0 +1,9 @@
+{
+  "id": "core-03",
+  "title": "Zero data usage is never flagged",
+  "layer": "core",
+  "category": "data",
+  "bug_report": "A customer who used 0 GB of their 50 GB plan gets no 'low usage' warning, even though they are clearly overpaying for data. People with 2 GB used do get the warning.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

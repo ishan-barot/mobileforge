@@ -1,0 +1,9 @@
+{
+  "id": "core-14",
+  "title": "Postal codes without a space aren't masked",
+  "layer": "core",
+  "category": "privacy",
+  "bug_report": "Privacy bug: Canadian postal codes typed without a space (M5B2K3) are not redacted before upload, while 'M5B 2K3' is.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

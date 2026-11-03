@@ -1,0 +1,9 @@
+{
+  "id": "core-09",
+  "title": "Savings ignore overage charges",
+  "layer": "core",
+  "category": "logic",
+  "bug_report": "A user on a $55 plan who pays $30 in overage every month is told a $60 plan would not save them money. Their real monthly cost is $85, so the savings estimate should include overage charges.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

@@ -1,0 +1,13 @@
+diff --git a/packages/core/src/matcher.ts b/packages/core/src/matcher.ts
+index 2a05937..07049b1 100644
+--- a/packages/core/src/matcher.ts
++++ b/packages/core/src/matcher.ts
+@@ -15,7 +15,7 @@ export type PlanMatch = Plan & { savingsPerYear: number };
+ 
+ // deterministic on purpose, ranking plans is math and not a job for an llm
+ export function matchPlans(bill: Bill, plans: Plan[], limit = 5): PlanMatch[] {
+-  const used = bill.dataUsedGB ?? bill.dataCapGB ?? 10;
++  const used = bill.dataUsedGB || 10;
+   const needGB = Math.max(1, used * 1.2); // 20% headroom so they don't blow past the cap next month
+   const current = bill.monthlyPlanPrice + bill.overageCharges; // pre-tax, same basis as listed plan prices
+ 

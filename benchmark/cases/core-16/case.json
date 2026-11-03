@@ -1,0 +1,9 @@
+{
+  "id": "core-16",
+  "title": "Uppercase account labels skip redaction",
+  "layer": "core",
+  "category": "privacy",
+  "bug_report": "Privacy bug: bills that print the label in capitals, like 'ACCOUNT NO: 8841-2290-17', send the account number to the server unmasked. 'Account number: 8841-2290-17' works.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

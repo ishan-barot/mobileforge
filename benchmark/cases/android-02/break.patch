@@ -1,0 +1,13 @@
+diff --git a/apps/mobile/src/app/result/[id].tsx b/apps/mobile/src/app/result/[id].tsx
+index 37f233a..0f25547 100644
+--- a/apps/mobile/src/app/result/[id].tsx
++++ b/apps/mobile/src/app/result/[id].tsx
+@@ -16,7 +16,7 @@ export default function ResultScreen() {
+   return (
+     <SafeAreaView style={ui.screen} edges={["top"]}>
+       <ScrollView contentContainerStyle={ui.content}>
+-        <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Back">
++        <Pressable onPress={() => router.back()} accessibilityRole="button">
+           <Text style={ui.link}>‹ Back</Text>
+         </Pressable>
+ 

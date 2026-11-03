@@ -1,0 +1,9 @@
+{
+  "id": "core-01",
+  "title": "Promo countdown is one day short",
+  "layer": "core",
+  "category": "logic",
+  "bug_report": "The 'promo ending' warning undercounts the days left. Checked on Oct 29 at noon with a promo ending Nov 21, it says the promo ends in 22 days, but there are 23 days left (partial days should round up).",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}

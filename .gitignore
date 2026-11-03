@@ -1,0 +1,6 @@
+.env
+workspace/
+results/memory/
+__pycache__/
+*.egg-info/
+.venv/

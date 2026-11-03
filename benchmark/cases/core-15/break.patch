@@ -1,0 +1,15 @@
+diff --git a/packages/core/src/redact.ts b/packages/core/src/redact.ts
+index dc75769..145deab 100644
+--- a/packages/core/src/redact.ts
++++ b/packages/core/src/redact.ts
+@@ -10,7 +10,7 @@ export function redact(text: string): string {
+   return text
+     .replace(ACCOUNT, (_m, label: string) => `${label} [ACCOUNT]`)
+     .replace(EMAIL, "[EMAIL]")
++    .replace(LONG_DIGITS, "[NUMBER]")
+     .replace(PHONE, "[PHONE]")
+-    .replace(POSTAL, "[POSTAL]")
+-    .replace(LONG_DIGITS, "[NUMBER]");
++    .replace(POSTAL, "[POSTAL]");
+ }
+\ No newline at end of file

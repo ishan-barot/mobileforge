@@ -1,0 +1,13 @@
+diff --git a/packages/core/src/matcher.ts b/packages/core/src/matcher.ts
+index 2a05937..4ab596f 100644
+--- a/packages/core/src/matcher.ts
++++ b/packages/core/src/matcher.ts
+@@ -23,6 +23,6 @@ export function matchPlans(bill: Bill, plans: Plan[], limit = 5): PlanMatch[] {
+     .filter((p) => p.dataGB === null || p.dataGB >= needGB)
+     .map((p) => ({ ...p, savingsPerYear: Math.round((current - p.monthlyPrice) * 12 * 100) / 100 }))
+     .filter((p) => p.savingsPerYear > 0)
+-    .sort((a, b) => b.savingsPerYear - a.savingsPerYear || (b.dataGB ?? 1e9) - (a.dataGB ?? 1e9))
++    .sort((a, b) => a.savingsPerYear - b.savingsPerYear || (b.dataGB ?? 1e9) - (a.dataGB ?? 1e9))
+     .slice(0, limit);
+ }
+\ No newline at end of file

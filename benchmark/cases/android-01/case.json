@@ -1,0 +1,10 @@
+{
+  "id": "android-01",
+  "title": "Heads up card missing on the result screen",
+  "layer": "android",
+  "category": "ui",
+  "bug_report": "On Android, after tapping 'Try a sample bill', the result screen no longer shows the 'Heads up' card. The sample bill uses only 3 GB of a 50 GB plan, so the low-data warning should appear in a 'Heads up' card above 'Every charge'.",
+  "break_patch": "break.patch",
+  "repro_flows": ["sample-bill"],
+  "hidden_flow": "hidden.yaml"
+}

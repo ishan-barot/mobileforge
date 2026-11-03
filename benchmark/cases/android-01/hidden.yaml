@@ -1,0 +1,12 @@
+appId: com.ishanbarot.fineprint
+---
+- launchApp:
+    clearState: true
+- tapOn: "Get started"
+- tapOn: "Try a sample bill"
+- extendedWaitUntil:
+    visible: "Cheaper plans"
+    timeout: 30000
+- assertVisible: "Heads up"
+- assertVisible: ".*You used 3 GB of a 50 GB plan"
+- assertVisible: "Every charge"

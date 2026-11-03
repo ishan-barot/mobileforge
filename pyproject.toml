@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mobileforge"
+version = "0.1.0"
+description = "Autonomous multi-agent bug repair for mobile apps, evaluated on Fineprint"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+mobileforge = "mobileforge.cli:main"
+
+[tool.setuptools]
+packages = ["mobileforge"]

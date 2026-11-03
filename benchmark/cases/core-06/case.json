@@ -1,0 +1,9 @@
+{
+  "id": "core-06",
+  "title": "Overage amount loses its cents formatting",
+  "layer": "core",
+  "category": "ui-text",
+  "bug_report": "The overage warning shows amounts like '$19.5 in overage charges this month' instead of '$19.50'. Money should always show two decimals, like the promo warning does.",
+  "break_patch": "break.patch",
+  "hidden_test": "hidden.test.ts"
+}
