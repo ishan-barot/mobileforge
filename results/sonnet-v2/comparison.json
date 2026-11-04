@@ -1,0 +1,274 @@
+{
+  "modes": {
+    "single": {
+      "runs": 16,
+      "cases": 16,
+      "reproduction_rate": null,
+      "verified_repair_rate": 0.938,
+      "regression_rate": 0.0,
+      "median_duration_s": 19.7,
+      "avg_cost_usd": 0.064,
+      "avg_tool_calls": 9.7,
+      "human_intervention_rate": 0.0,
+      "approved_wrong_patch_rate": 0.062,
+      "review_false_reject_rate": 0.0,
+      "safe_failure_rate": 0.0
+    },
+    "multi": {
+      "runs": 16,
+      "cases": 16,
+      "reproduction_rate": 1.0,
+      "verified_repair_rate": 0.938,
+      "regression_rate": 0.0,
+      "median_duration_s": 49.0,
+      "avg_cost_usd": 0.1459,
+      "avg_tool_calls": 16.9,
+      "human_intervention_rate": 0.0,
+      "approved_wrong_patch_rate": 0.062,
+      "review_false_reject_rate": 0.0,
+      "safe_failure_rate": 0.0
+    },
+    "full": {
+      "runs": 16,
+      "cases": 16,
+      "reproduction_rate": 1.0,
+      "verified_repair_rate": 0.938,
+      "regression_rate": 0.0,
+      "median_duration_s": 51.7,
+      "avg_cost_usd": 0.1626,
+      "avg_tool_calls": 17.7,
+      "human_intervention_rate": 0.0,
+      "approved_wrong_patch_rate": 0.062,
+      "review_false_reject_rate": 0.0,
+      "safe_failure_rate": 0.0
+    }
+  },
+  "memory_benefit_pp": 0.0,
+  "multi_vs_single_pp": 0.0,
+  "per_case": {
+    "core-01": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-02": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-03": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-04": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-05": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-06": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-07": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-08": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-09": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-10": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-11": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-12": {
+      "single": [
+        0,
+        1
+      ],
+      "multi": [
+        0,
+        1
+      ],
+      "full": [
+        0,
+        1
+      ]
+    },
+    "core-13": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-14": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-15": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    },
+    "core-16": {
+      "single": [
+        1,
+        1
+      ],
+      "multi": [
+        1,
+        1
+      ],
+      "full": [
+        1,
+        1
+      ]
+    }
+  }
+}
