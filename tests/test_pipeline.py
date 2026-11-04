@@ -124,7 +124,7 @@ class PipelineTest(unittest.TestCase):
         self.assertFalse(s["regression"])
         self.assertEqual(s["attempt_count"], 1)
         self.assertIn("+export const add = (a: number, b: number) => a + b;", Path(s["patch_path"]).read_text())
-        self.assertNotIn("mobileforge/add.test.ts", Path(s["patch_path"]).read_text())  # repro tests stay out of the patch
+        self.assertIn("mobileforge/add.test.ts", Path(s["patch_path"]).read_text())  # repro test ships as the regression test
         self.assertTrue((self.tmp / "runs/r1/report.html").exists())
         nodes = [n for _, n in self.store.history("r1")]
         self.assertEqual(nodes, ["start", "triage", "reproduce", "diagnose", "repair", "verify", "review", "finalize"])
@@ -295,6 +295,19 @@ class TypecheckAndThinkingTest(unittest.TestCase):
         self.assertIn('from "../fixtures"', path.read_text())
         self.assertIn("adjusted imports", out)
         self.assertEqual(ctx.state["repro_tests"], ["test/mobileforge/promo_days.test.ts"])
+
+    def test_search_whole_repo_skips_node_modules(self):
+        tmp = Path(tempfile.mkdtemp())
+        ws = Workspace(make_repo(tmp), make_case(tmp), FakeRunner())
+
+        class Ctx:
+            pass
+        ctx = Ctx()
+        ctx.ws, ctx.state = ws, {}
+        out = TOOLS["search_code"].fn(ctx, {"query": "nope"})  # only exists in node_modules/secret.ts
+        self.assertEqual(out, "no matches")
+        self.assertIn("calc.ts", TOOLS["search_code"].fn(ctx, {"query": "add"}))
+        self.assertNotIn("node_modules", TOOLS["list_files"].fn(ctx, {}))
 
     def test_strip_thinking(self):
         from mobileforge.llm import strip_thinking

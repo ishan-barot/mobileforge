@@ -162,7 +162,7 @@ def node_verify(ctx: RunContext) -> str:
 
 
 def node_review(ctx: RunContext) -> str:
-    diff = ctx.ws.diff()
+    diff = ctx.ws.diff(include_repro=True)  # the fix plus its regression test
     try:
         verdict = agents.review(ctx, ctx.state["spec"], diff,
                                 {k: v["ok"] for k, v in ctx.state["test_results"].items() if isinstance(v, dict)})
@@ -200,7 +200,8 @@ def node_single(ctx: RunContext) -> str:
 def node_finalize(ctx: RunContext) -> str:
     ws: Workspace = ctx.ws
     ctx.state.setdefault("status", "failed")
-    diff = ws.diff()
+    # the delivered patch ships the repro test as its regression test, like a human pr would
+    diff = ws.diff(include_repro=True) if ws.source_changes() else ""
     (ctx.run_dir / "fix.patch").write_text(diff, encoding="utf-8")
     ctx.state["patch_path"] = str(ctx.run_dir / "fix.patch")
     ctx.state["lines_changed"] = sum(1 for l in diff.splitlines()

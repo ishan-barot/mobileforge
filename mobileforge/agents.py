@@ -104,9 +104,11 @@ def triage(ctx: RunContext) -> dict:
                              "acceptance_criteria": ARR, "search_terms": ARR, "category": STR}}
     prompt = (f"Bug report:\n{case.bug_report}\n\nLayer: {case.layer}. Turn this into a precise issue spec. "
               "Look around the code briefly to name the affected component. acceptance_criteria must be "
-              "concrete, checkable statements that come from the bug report itself. Don't invent new "
-              "requirements or edge-case decisions the report doesn't ask for. Add one final criterion: "
-              "all behavior the report doesn't mention stays exactly as it is today.")
+              "concrete, checkable statements about behavior that come from the bug report itself. Don't invent "
+              "new requirements or edge-case decisions the report doesn't ask for, and don't write criteria "
+              "about which files to edit or which tests to add: the pipeline adds a regression test "
+              "automatically. Add one final criterion: all behavior the report doesn't mention stays "
+              "exactly as it is today.")
     return run_agent(ctx, "triage", BASE + " Your job: triage a bug report into a structured spec.",
                      prompt, pick("list_files", "search_code", "read_source"), schema, max_turns=6)
 
@@ -180,6 +182,9 @@ def review(ctx: RunContext, spec: dict, diff: str, checks: dict) -> dict:
               "logic, or it changes unrelated code. Each blocking issue needs the file, the problem, and an input "
               "that would now behave wrongly. Style, naming, missing comments, missing extra tests, or a different "
               "fix you'd prefer are NOT blocking: put them in notes. Read the source before you claim a defect. "
+              f"The repair agent may only edit {ctx.ws.layer['editable']}. Regression tests written by the "
+              "reproduce step are already included in the patch under test/mobileforge/. Never block on "
+              "missing or extra tests, or on anything outside those editable folders. "
               "An empty blocking_issues list approves the patch.")
     return run_agent(ctx, "review", BASE + " Your job: code review. Block only on real, demonstrable defects.",
                      prompt, pick("read_source", "search_code"), schema, max_turns=6)

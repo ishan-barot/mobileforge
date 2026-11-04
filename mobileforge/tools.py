@@ -7,8 +7,11 @@ import re
 from dataclasses import dataclass
 from typing import Callable
 
+import os
+from pathlib import Path
+
 from . import android
-from .workspace import PathRejected, Workspace
+from .workspace import BLOCKED_PARTS, PathRejected, Workspace
 
 
 class ToolError(Exception):
@@ -37,19 +40,27 @@ I = {"type": "integer"}
 
 # ---------- reading ----------
 
+def iter_files(ws: Workspace, base: Path):
+    """walk the repo without ever descending into node_modules, .git or build folders.
+    rglob would follow the linked node_modules and crash on paths outside the repo."""
+    for root, dirs, files in os.walk(base):
+        dirs[:] = sorted(d for d in dirs if d not in BLOCKED_PARTS)
+        for name in sorted(files):
+            p = Path(root) / name
+            try:
+                ws.resolve(ws.rel(p))
+            except (PathRejected, ValueError):
+                continue
+            yield p
+
 def _list_files(ctx, a):
     ws: Workspace = ctx.ws
     base = ws.resolve(a.get("dir", ""))
     if not base.is_dir():
         raise ToolError(f"{a.get('dir')} isn't a folder")
     out = []
-    for p in sorted(base.rglob("*")):
-        try:
-            ws.resolve(ws.rel(p))
-        except PathRejected:
-            continue
-        if p.is_file():
-            out.append(ws.rel(p))
+    for p in iter_files(ws, base):
+        out.append(ws.rel(p))
         if len(out) >= 200:
             out.append("... (more files not shown)")
             break
@@ -65,13 +76,12 @@ def _search_code(ctx, a):
         raise ToolError(f"bad regex: {e}")
     base = ws.resolve(a.get("dir", ""))
     hits = []
-    for p in sorted(base.rglob("*")):
-        if not p.is_file() or p.suffix not in {".ts", ".tsx", ".js", ".json", ".yaml", ".md"}:
+    for p in iter_files(ws, base):
+        if p.suffix not in {".ts", ".tsx", ".js", ".json", ".yaml", ".md"}:
             continue
         try:
-            ws.resolve(ws.rel(p))
             lines = p.read_text(encoding="utf-8", errors="replace").splitlines()
-        except (PathRejected, OSError):
+        except OSError:
             continue
         for n, line in enumerate(lines, 1):
             if (pattern.search(line) if pattern else query.lower() in line.lower()):
