@@ -66,28 +66,33 @@ A fix only counts if the run ended in `awaiting_approval` **and** the hidden tes
 
 ### Results
 
-Run `mobileforge bench`, then see [results/summary.md](results/summary.md). Raw per-run rows are in `results/runs.csv`.
+Claude Sonnet 5.5, 16 core cases, 1 trial per mode. Raw rows in [results/sonnet-v2](results/sonnet-v2).
 
-Example run (`core-01`, Claude Sonnet 5.5, multi-agent mode): reproduced with a failing test, patched on the first attempt, passed the regression suite, typecheck, review and hidden acceptance tests. 23 tool calls, $0.25, 4.5 minutes.
+| | single | multi | full |
+|---|---|---|---|
+| verified repair rate | 94% (15/16) | 94% (15/16) | 94% (15/16) |
+| regressions | 0% | 0% | 0% |
+| wrong patch reached human approval | 6% | 6% | 6% |
+| median time per issue | 20 s | 49 s | 52 s |
+| avg cost per issue | $0.064 | $0.146 | $0.163 |
+| avg tool calls | 9.7 | 16.9 | 17.7 |
 
-## Quick start (Windows)
+**What this shows**
+- On small, well-scoped bugs, all three systems hit the same ceiling. The five-agent pipeline costs about 2.3x more and takes about 2.5x longer with no accuracy gain, so a single agent is the right default here.
+- Verified fix memory added nothing at this ceiling. The benchmark is saturated: telling the systems apart needs harder, more ambiguous bugs.
+- core-12 beat every system in every Sonnet run: the wrong patch passed the visible tests, the typecheck and review, and only the hidden acceptance tests caught it. That is the case for keeping hidden tests separate from anything an agent can see.
 
-```powershell
-py -m pip install -e .
-copy .env.example .env      # then paste your Anthropic API key into .env
-mobileforge doctor
-mobileforge setup           # clones Fineprint into workspace/ and installs it
-mobileforge run --case core-01
-mobileforge serve           # dashboard at http://localhost:8765
-mobileforge bench --trials 1
-```
+**How it got here**
 
-Fix a real Fineprint bug (no planted defect):
+| | v1 | v2 |
+|---|---|---|
+| single | 94% | 94% |
+| multi | 50% | 94% |
+| full | 75% | 94% |
 
-```powershell
-mobileforge run --issue "the overage warning shows $19.5 instead of $19.50" --layer core
-mobileforge approve <run-id>
-```
+v1's multi-agent loss came from two harness bugs, not from the agents. Triage wrote "add a regression test" as a requirement, the repair agent wasn't allowed to edit tests, and the reviewer blocked on the missing test (44% of correct patches rejected). Whole-repo code search also crashed on the linked `node_modules`. Fixing both closed the gap. Earlier Haiku shakedowns, kept in `results/shakedown-haiku-v1` and `-v2`, found an over-strict reviewer, a thinking-signature crash, and repro tests breaking the typecheck.
+
+Caveat: one trial per mode, so treat small differences as noise.
 
 ## Commands
 
