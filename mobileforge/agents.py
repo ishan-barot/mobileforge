@@ -27,14 +27,12 @@ def run_agent(ctx: RunContext, name: str, system: str, prompt: str, tools, submi
     messages: list = [{"role": "user", "content": prompt}]
     ctx.log("agent_start", name, prompt=prompt[:2000])
 
-    submit_only = [s for s in specs if s["name"] == SUBMIT]
-    # some models reject forced tool_choice, so we never force it. when turns run out the agent
-    # gets a couple of grace turns where submit is the only tool it can see
+    # some models reject forced tool_choice, so we never force it. the tool list also never changes
+    # mid-conversation (that breaks thinking signatures). when turns run out we just tell it to submit
     for turn in range(max_turns + 2):
-        wrapping_up = turn >= max_turns - 1
-        if wrapping_up:
+        if turn >= max_turns - 1:
             _nudge(messages, "You're out of turns. Call submit now with your best result.")
-        res = ctx.llm.chat(system, messages, submit_only if wrapping_up else specs, max_tokens=max_tokens)
+        res = ctx.llm.chat(system, messages, specs, max_tokens=max_tokens)
         u = res.get("usage", {})
         ctx.usage.add(name, u.get("input_tokens", 0), u.get("output_tokens", 0))
         ctx.sync_usage()
@@ -153,10 +151,10 @@ def repair(ctx: RunContext, spec: dict, diagnosis: dict, feedback: str) -> dict:
               "properties": {"summary": STR, "rationale": STR}}
     editable = ctx.ws.layer["editable"]
     tools = ["read_source", "search_code", "replace_in_file", "git_diff"]
-    tools.append("run_tests" if ctx.ws.case.layer == "core" else "run_maestro")
+    tools += ["run_tests", "run_typecheck"] if ctx.ws.case.layer == "core" else ["run_maestro"]
     prompt = (f"Issue spec:\n{_j(spec)}\n\nDiagnosis:\n{_j(diagnosis)}\n\n"
               f"Make the smallest correct change. You may only edit files under {editable}. "
-              "Don't change behavior the bug report doesn't mention. Run the tests before you submit."
+              "Don't change behavior the bug report doesn't mention. Run the tests and the typecheck before you submit."
               + (f"\n\nYour previous attempt failed verification. Evidence:\n{feedback[:6000]}" if feedback else ""))
     ctx.edit_budget = 8
     try:
@@ -169,14 +167,20 @@ def repair(ctx: RunContext, spec: dict, diagnosis: dict, feedback: str) -> dict:
 # ---------- 5. review ----------
 
 def review(ctx: RunContext, spec: dict, diff: str, checks: dict) -> dict:
-    schema = {"type": "object", "required": ["approve", "risks", "unnecessary_changes", "notes"],
-              "properties": {"approve": {"type": "boolean"}, "risks": ARR, "unnecessary_changes": ARR,
-                             "notes": STR}}
-    prompt = (f"Acceptance criteria:\n{_j(spec.get('acceptance_criteria'))}\n\nPatch:\n{diff[:8000]}\n\n"
-              f"Deterministic check results:\n{_j(checks)}\n\nApprove only if the patch fixes the root cause "
-              "(not just the symptom the test checks), changes nothing unrelated, and doesn't game the tests.")
-    return run_agent(ctx, "review", BASE + " Your job: code review. Be strict.", prompt,
-                     pick("read_source", "search_code"), schema, max_turns=6)
+    issue = {"type": "object", "required": ["file", "problem", "why_it_breaks"],
+             "properties": {"file": STR, "problem": STR, "why_it_breaks": STR}}
+    schema = {"type": "object", "required": ["blocking_issues", "notes"],
+              "properties": {"blocking_issues": {"type": "array", "items": issue}, "notes": ARR}}
+    prompt = (f"Bug report:\n{ctx.ws.case.bug_report}\n\nAcceptance criteria:\n{_j(spec.get('acceptance_criteria'))}\n\n"
+              f"Patch:\n{diff[:8000]}\n\nDeterministic check results (already passed):\n{_j(checks)}\n\n"
+              "List a blocking issue ONLY for a concrete defect you can point to in the code: the patch doesn't fix "
+              "the reported behavior, it breaks other behavior, it special-cases test inputs instead of fixing the "
+              "logic, or it changes unrelated code. Each blocking issue needs the file, the problem, and an input "
+              "that would now behave wrongly. Style, naming, missing comments, missing extra tests, or a different "
+              "fix you'd prefer are NOT blocking: put them in notes. Read the source before you claim a defect. "
+              "An empty blocking_issues list approves the patch.")
+    return run_agent(ctx, "review", BASE + " Your job: code review. Block only on real, demonstrable defects.",
+                     prompt, pick("read_source", "search_code"), schema, max_turns=6)
 
 
 # ---------- single-agent baseline ----------
@@ -186,9 +190,9 @@ def single_agent(ctx: RunContext) -> dict:
     schema = {"type": "object", "required": ["summary", "root_cause"],
               "properties": {"summary": STR, "root_cause": STR}}
     names = ["list_files", "search_code", "read_source", "replace_in_file", "git_diff"]
-    names += ["write_repro_test", "run_tests"] if case.layer == "core" else ["run_maestro", "read_logcat"]
+    names += ["write_repro_test", "run_tests", "run_typecheck"] if case.layer == "core" else ["run_maestro", "read_logcat"]
     prompt = (f"Bug report:\n{case.bug_report}\n\nFix this bug. You may only edit files under "
-              f"{ctx.ws.layer['editable']}. Reproduce it first, then fix it, then run the tests. "
+              f"{ctx.ws.layer['editable']}. Reproduce it first, then fix it, then run the tests and the typecheck. "
               + (f"Approved maestro flows: {case.repro_flows}." if case.repro_flows else ""))
     ctx.edit_budget = 8 * ctx.settings.max_repair_attempts
     try:

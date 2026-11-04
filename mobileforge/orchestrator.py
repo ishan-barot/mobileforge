@@ -167,12 +167,17 @@ def node_review(ctx: RunContext) -> str:
         verdict = agents.review(ctx, ctx.state["spec"], diff,
                                 {k: v["ok"] for k, v in ctx.state["test_results"].items() if isinstance(v, dict)})
     except agents.AgentGaveUp:
-        verdict = {"approve": False, "risks": ["reviewer never submitted"], "unnecessary_changes": [], "notes": ""}
+        verdict = {"blocking_issues": [{"file": "-", "problem": "reviewer never submitted", "why_it_breaks": "-"}],
+                   "notes": []}
+    # code decides, not the reviewer's mood: approved if and only if no concrete blocking issue was listed
+    blocking = [b for b in verdict.get("blocking_issues", []) if isinstance(b, dict) and b.get("problem")]
+    verdict["approve"] = not blocking
     ctx.state["review"] = verdict
-    if verdict.get("approve"):
+    ctx.state["review_rounds"] = ctx.state.get("review_rounds", 0) + 1
+    if verdict["approve"]:
         ctx.state["status"] = "awaiting_approval"
         return "finalize"
-    ctx.state["feedback"] = "code review rejected the patch:\n" + json.dumps(verdict, indent=2)
+    ctx.state["feedback"] = "code review found blocking issues. fix only these:\n" + json.dumps(blocking, indent=2)
     if ctx.state["attempt_count"] < ctx.state["max_attempts"]:
         return "repair"
     ctx.state["status"] = "rejected_by_review"

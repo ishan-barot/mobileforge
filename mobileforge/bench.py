@@ -98,6 +98,8 @@ def summarize(path: Path | None = None) -> dict:
             "avg_cost_usd": round(statistics.mean(float(r["cost_usd"] or 0) for r in rs), 4),
             "avg_tool_calls": round(statistics.mean(int(r["tool_calls"] or 0) for r in rs), 1),
             "human_intervention_rate": _rate(sum(r["status"] == "needs_info" for r in rs), len(rs)),
+            "review_false_reject_rate": _rate(sum(r["status"] == "rejected_by_review" and yes(r["hidden_pass"])
+                                                  for r in rs), len(rs)),
             "safe_failure_rate": _rate(sum(r["status"] in ("failed", "rejected_by_review", "needs_info")
                                            and not yes(r["hidden_pass"]) for r in rs), len(rs)),
         }
@@ -141,6 +143,7 @@ def _write_summary(c: dict) -> None:
                             ("reproduction_rate", "reproduction rate", _pct),
                             ("regression_rate", "regression rate", _pct),
                             ("safe_failure_rate", "failed safely (no bad patch shipped)", _pct),
+                            ("review_false_reject_rate", "reviewer rejected a correct patch", _pct),
                             ("median_duration_s", "median time per issue (s)", str),
                             ("avg_cost_usd", "avg cost per issue (usd)", lambda v: f"${v:.3f}"),
                             ("avg_tool_calls", "avg tool calls", str),

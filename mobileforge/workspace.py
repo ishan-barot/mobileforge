@@ -108,7 +108,19 @@ class Workspace:
         return self.run_tests(self.visible_tests)
 
     def run_typecheck(self) -> tuple[bool, str]:
-        code, out = self.runner.typecheck(self.package_dir)
+        # the typecheck judges the product code, not the agents' throwaway repro tests, so park the
+        # repro folder outside the repo while tsc runs
+        repro = self.repo / self.layer["repro_dir"] if self.layer["repro_dir"] else None
+        parked = self.repo.parent / "_repro_parked"
+        moved = bool(repro and repro.exists())
+        if moved:
+            shutil.rmtree(parked, ignore_errors=True)
+            shutil.move(str(repro), str(parked))
+        try:
+            code, out = self.runner.typecheck(self.package_dir)
+        finally:
+            if moved:
+                shutil.move(str(parked), str(repro))
         return code == 0, proc.clip(out, 6000)
 
     def run_hidden(self) -> tuple[bool, str] | None:

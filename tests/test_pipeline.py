@@ -95,7 +95,7 @@ def happy_book():
                                            "evidence": "fails"})],
         "diagnose": [tool_call("submit", DIAG)],
         "repair": [FIX, tool_call("submit", {"summary": "plus", "rationale": "math"})],
-        "review": [tool_call("submit", {"approve": True, "risks": [], "unnecessary_changes": [], "notes": "ok"})],
+        "review": [tool_call("submit", {"blocking_issues": [], "notes": ["ok"]})],
     }
 
 
@@ -153,7 +153,7 @@ class PipelineTest(unittest.TestCase):
 
     def test_review_rejection_counts_as_safe_failure(self):
         book = happy_book()
-        reject = tool_call("submit", {"approve": False, "risks": ["games the test"], "unnecessary_changes": [], "notes": "no"})
+        reject = tool_call("submit", {"blocking_issues": [{"file": "calc.ts", "problem": "hardcodes 5", "why_it_breaks": "add(1,1)"}], "notes": []})
         book["review"] = [reject] * 3
         book["repair"] = [FIX, tool_call("submit", {"summary": "p", "rationale": "m"})] + \
                          [tool_call("submit", {"summary": "p", "rationale": "m"})] * 2
@@ -161,6 +161,13 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(s["status"], "rejected_by_review")
         self.assertTrue(s["hidden_pass"])
         self.assertFalse(s["verified"])  # a rejected patch is never counted as a delivered fix
+
+    def test_review_notes_alone_do_not_block(self):
+        book = happy_book()
+        book["review"] = [tool_call("submit", {"blocking_issues": [], "notes": ["rename variable", "add a comment"]})]
+        s = self.start(book, run_id="r10")
+        self.assertEqual(s["status"], "awaiting_approval")
+        self.assertTrue(s["review"]["approve"])
 
     def test_cannot_reproduce_asks_for_info(self):
         book = happy_book()
@@ -256,6 +263,32 @@ class SafetyTest(unittest.TestCase):
             self.call("run_maestro", {"flow_id": "anything"})
 
 
+class TypecheckAndThinkingTest(unittest.TestCase):
+    def test_typecheck_never_sees_repro_tests(self):
+        tmp = Path(tempfile.mkdtemp())
+        seen = {}
+
+        class R(FakeRunner):
+            def typecheck(self, package_dir):
+                seen["repro_present"] = (Path(package_dir) / "test/mobileforge").exists()
+                return 0, "ok"
+        ws = Workspace(make_repo(tmp), make_case(tmp), R())
+        ws.repro_path("loose").write_text("const x: number = 'nope'")
+        ok, _ = ws.run_typecheck()
+        self.assertTrue(ok)
+        self.assertFalse(seen["repro_present"])
+        self.assertTrue((ws.repo / "packages/core/test/mobileforge/loose.test.ts").exists())
+
+    def test_strip_thinking(self):
+        from mobileforge.llm import strip_thinking
+        msgs = [{"role": "user", "content": "hi"},
+                {"role": "assistant", "content": [{"type": "thinking", "thinking": "x", "signature": "s"},
+                                                  {"type": "tool_use", "id": "1", "name": "a", "input": {}}]}]
+        out = strip_thinking(msgs)
+        self.assertEqual([b["type"] for b in out[1]["content"]], ["tool_use"])
+        self.assertEqual(msgs[1]["content"][0]["type"], "thinking")  # original untouched
+
+
 class BenchTest(unittest.TestCase):
     def test_summary_math(self):
         tmp = Path(tempfile.mkdtemp())
@@ -300,4 +333,4 @@ class AgentLoopTest(unittest.TestCase):
         out = agents.run_agent(ctx, "t", "sys", "go", [TOOLS["list_files"]], {"type": "object"}, max_turns=3)
         self.assertEqual(out, {"x": 1})
         self.assertTrue(all(c is None for c, _ in seen))
-        self.assertEqual(seen[2][1], ["submit"])
+        self.assertEqual(seen[0][1], seen[2][1])  # tool list never changes mid-conversation

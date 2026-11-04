@@ -84,6 +84,12 @@ class AnthropicProvider(Provider):
                     return json.loads(res.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
                 detail = e.read().decode("utf-8", "replace")[:500]
+                if e.code == 400 and "signature" in detail and "thinking" in detail and not body.get("_stripped"):
+                    # old thinking blocks can't be verified anymore, drop them and try again
+                    body["messages"] = strip_thinking(messages)
+                    body["_stripped"] = True
+                    data = json.dumps({k: v for k, v in body.items() if k != "_stripped"}).encode("utf-8")
+                    continue
                 if e.code in (429, 500, 502, 503, 529) and attempt < 5:
                     time.sleep(min(60, 2 ** attempt * 3))
                     continue
@@ -94,6 +100,17 @@ class AnthropicProvider(Provider):
                     continue
                 raise LLMError(f"couldn't reach the anthropic api: {e.reason}") from e
         raise LLMError("anthropic api kept failing")
+
+
+def strip_thinking(messages: list) -> list:
+    out = []
+    for m in messages:
+        if m["role"] == "assistant" and isinstance(m["content"], list):
+            kept = [b for b in m["content"] if b.get("type") not in ("thinking", "redacted_thinking")]
+            out.append({**m, "content": kept or [{"type": "text", "text": "(thinking omitted)"}]})
+        else:
+            out.append(m)
+    return out
 
 
 class ScriptedProvider(Provider):
