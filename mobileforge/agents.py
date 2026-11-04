@@ -104,7 +104,9 @@ def triage(ctx: RunContext) -> dict:
                              "acceptance_criteria": ARR, "search_terms": ARR, "category": STR}}
     prompt = (f"Bug report:\n{case.bug_report}\n\nLayer: {case.layer}. Turn this into a precise issue spec. "
               "Look around the code briefly to name the affected component. acceptance_criteria must be "
-              "concrete, checkable statements.")
+              "concrete, checkable statements that come from the bug report itself. Don't invent new "
+              "requirements or edge-case decisions the report doesn't ask for. Add one final criterion: "
+              "all behavior the report doesn't mention stays exactly as it is today.")
     return run_agent(ctx, "triage", BASE + " Your job: triage a bug report into a structured spec.",
                      prompt, pick("list_files", "search_code", "read_source"), schema, max_turns=6)
 

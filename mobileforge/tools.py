@@ -141,12 +141,16 @@ def _write_repro_test(ctx, a):
     if ws.layer["repro_dir"] is None:
         raise ToolError("this layer reproduces bugs with maestro flows, use run_maestro")
     path = ws.repro_path(a["name"])
-    path.write_text(a["content"], encoding="utf-8")
+    # repro tests sit one folder deeper than the real suite, so fix the imports agents copy from it
+    content, n = re.subn(r"""(from\s+['"])\.\./src/""", r"\1../../src/", a["content"])
+    content, m = re.subn(r"""(from\s+['"])\./fixtures(['"])""", r"\1../fixtures\2", content)
+    path.write_text(content, encoding="utf-8")
+    note = " (adjusted imports for the test/mobileforge/ folder)" if n or m else ""
     ctx.state.setdefault("repro_tests", [])
     rel_pkg = path.relative_to(ws.package_dir).as_posix()
     if rel_pkg not in ctx.state["repro_tests"]:
         ctx.state["repro_tests"].append(rel_pkg)
-    return f"wrote {ws.rel(path)}. run it with run_tests(files=['{rel_pkg}'])"
+    return f"wrote {ws.rel(path)}{note}. run it with run_tests(files=['{rel_pkg}'])"
 
 
 # ---------- running ----------
@@ -215,8 +219,9 @@ TOOLS = {
                             "old must match exactly once. pass old='' to create a new file",
                             obj({"path": S, "old": S, "new": S}, ["path", "old", "new"]), _replace_in_file),
     "write_repro_test": Tool("write_repro_test",
-                             "write a vitest test that reproduces the bug. imports work from the test folder, "
-                             "e.g. import { wasteFlags } from '../../src/flags'. it should FAIL on the current code",
+                             "write a vitest test that reproduces the bug. it is saved in packages/core/test/mobileforge/, "
+                             "so import source as '../../src/<module>' and fixtures as '../fixtures'. "
+                             "it should FAIL on the current code",
                              obj({"name": S, "content": S}, ["name", "content"]), _write_repro_test),
     "run_tests": Tool("run_tests", "run vitest on specific test files (paths like test/flags.test.ts), "
                                    "or with no files to run the visible suite plus your repro tests",

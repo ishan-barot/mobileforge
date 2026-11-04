@@ -279,6 +279,23 @@ class TypecheckAndThinkingTest(unittest.TestCase):
         self.assertFalse(seen["repro_present"])
         self.assertTrue((ws.repo / "packages/core/test/mobileforge/loose.test.ts").exists())
 
+    def test_repro_names_and_imports_are_fixed(self):
+        tmp = Path(tempfile.mkdtemp())
+        ws = Workspace(make_repo(tmp), make_case(tmp), FakeRunner())
+
+        class Ctx:
+            pass
+        ctx = Ctx()
+        ctx.ws, ctx.state = ws, {}
+        out = TOOLS["write_repro_test"].fn(ctx, {"name": "promo_days.test.ts", "content":
+            'import { a } from "../src/flags";\nimport { bill } from "./fixtures";\n'})
+        path = ws.repo / "packages/core/test/mobileforge/promo_days.test.ts"
+        self.assertTrue(path.exists())
+        self.assertIn('from "../../src/flags"', path.read_text())
+        self.assertIn('from "../fixtures"', path.read_text())
+        self.assertIn("adjusted imports", out)
+        self.assertEqual(ctx.state["repro_tests"], ["test/mobileforge/promo_days.test.ts"])
+
     def test_strip_thinking(self):
         from mobileforge.llm import strip_thinking
         msgs = [{"role": "user", "content": "hi"},

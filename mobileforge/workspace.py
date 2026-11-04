@@ -91,6 +91,11 @@ class Workspace:
 
     def repro_path(self, name: str) -> Path:
         # repro tests live in their own folder so they can never overwrite the real suite
+        # agents often pass "foo.test.ts", strip the extension before cleaning so it doesn't become "footestts"
+        for suffix in (".test.ts", ".spec.ts", ".ts"):
+            if name.endswith(suffix):
+                name = name[: -len(suffix)]
+                break
         safe = "".join(ch for ch in name if ch.isalnum() or ch in "-_") or "repro"
         folder = self.repo / self.layer["repro_dir"]
         folder.mkdir(parents=True, exist_ok=True)
