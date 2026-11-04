@@ -1,0 +1,4 @@
+mode,runs,cases,reproduction_rate,verified_repair_rate,regression_rate,median_duration_s,avg_cost_usd,avg_tool_calls,human_intervention_rate,review_false_reject_rate,safe_failure_rate
+single,16,16,,0.562,0.0,27.9,0.0077,14.4,0.0,0.0,0.0
+multi,16,16,1.0,0.875,0.0,63.5,0.0153,28.7,0.0,0.0,0.0
+full,16,16,1.0,0.938,0.0,58.8,0.0132,23,0.0,0.0,0.0
